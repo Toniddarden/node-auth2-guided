@@ -25,6 +25,8 @@ router.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.user = user;
+        
         res.status(200).json({
           message: `Welcome ${user.username}!`,
         });
@@ -36,5 +38,20 @@ router.post('/login', (req, res) => {
       res.status(500).json(error);
     });
 });
+
+
+router.get('/logout', (req, res) => {
+  if(req.session){
+    req.session.destroy(err => {
+      if(err){
+        res.send('you can checkout anyt time you like')
+      } else {
+        res.status(200).json({message: 'bye thanks for coming, deleting your session now'})
+      }
+    })
+  } else {
+    res.status(200).json({message: 'you were were never hear to begain with, what cookies??'})
+  }
+})
 
 module.exports = router;
